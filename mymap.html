@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset = "utf-8"/>
+		<title>Staj Projem</title>
+	</head>
+	<body>
+		<h1>My Map Project</h1>
+	</body>
+		<div id="map"
+			   style="width:900.0px; height:560.0px; background-color:rgb(255,255,255); border-width:thin; border-color:rgb(99,99,255); border-style:solid;"/>
+		<script src="http://maplink20.infotech.com.tr/mapviewer/maplink/jslib/oraclemaps.js"></script>
+		<script>
+			var mapper;
+			mapper = new MVMapView(document.getElementById("map"), "http://maplink20.infotech.com.tr/mapviewer/");
+			mapper.addBaseMapLayer(new MVBaseMap('INFOMAP.INFOTECH_TILELAYER')); 
+			mapper.display();
+		</script>
+</html>
