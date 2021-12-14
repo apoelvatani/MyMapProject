@@ -9,6 +9,11 @@
 		<div>
 			<button onclick="startZoom()">Zoom Start</button> <!--Yakınlaştırmaya başlatma butonu -->
 			<button onclick="stopZoom()">Zoom Stop</button> <!-- Yakınlaştırmayı bitirme butonu -->
+			<button onclick="startInfo()">Map Info</button> <!-- Bu butona tıklanıldıktan sonra haritada herhangi bir yere tıkladığımızda o tıklanılan yerin koordinatlarını verir -->
+			<button onclick="stopInfo()">Stop Get Info</button><!-- Tıklanıldığında map şnfo butonunun sağladığı işlevi iptal eder -->
+			<!--button onclick="addFOI(29.121114,41.004237)">Add Foi</button-->
+			<button onclick="addFOI(29.11198,41.012966)">Add Foi</button>
+			<!-- Tıklanıldığında parantez içinde belirtilen noktaya işaret bırakır -->
 		</div>
 	
 		<!-- Haritanın çerçevesini oluşturur -->
@@ -36,6 +41,62 @@
 			function stopZoom() {
 				mapper.stopMarqueeZoom(); <!-- Haritayı yakınlaştırmayı durduran fonksiyon çağırılır -->
 			}
+			
+			function startInfo() {
+				mapper.attachEventListener(MVEvent.MOUSE_CLICK, mouseClickOnMap); <!-- Mouse ile tıklanıldığında tıklanılan yerin bilgisini getir fonksiyonu -->
+			}
+
+			function stopInfo() {
+				mapper.detachEventListener(MVEvent.MOUSE_CLICK, mouseClickOnMap); <!-- Mouse ile tıklanıldığında harita üzerinde yer bilgisini göstermeyi iptal eden fonksiyon -->
+			}		
+				
+			function mouseClickOnMap () {
+				var mouseLocOri = mapper.getMouseLocation(); <!-- Mouse ile tıklanılan yerin konumunu alıp mouseLocOriye atama -->
+				var mouseLoc = mapper.transformGeom(mouseLocOri, 8307); <!-- Koordinatların oraclemapsin standartlarına göre dönüşüm yapılıp mouseLoca atanması -->
+				var xstr = "" + mouseLoc.getPointX(); <!-- Tıklanan konumun enlemi -->
+				var ystr = "" + mouseLoc.getPointY(); <!-- Tıklanan konumun boylamı -->
+				
+				var html = '';
+				
+				html += '<div class="divTable cinereousTable">\n';
+				html += '<div class="divTableHeading">\n';
+				html += '<div class="divTableRow">\n';
+				html += '<div class="divTableHead">Koordinat</div>\n';
+				html += '<div class="divTableHead">Bilgisi</div>\n';
+				html += '</div>\n';
+				html += '</div>\n';	
+				html += '<div class="divTableBody">\n';
+				html += '<div class="divTableRow">\n';
+				html += '<div class="divTableCell">Enlem</div>\n';
+				html += '<div class="divTableCell">' + ystr.substring(0, 9) + '</div>\n';
+				html += '</div>\n';
+				html += '<div class="divTableRow">\n';
+				html += '<div class="divTableCell">Boylam</div>\n';
+				html += '<div class="divTableCell"> ' + xstr.substring(0, 10) + '</div>\n';
+				html += '</div>\n';
+				html += '</div>\n';
+				html += '</div>\n';
+				mapper.displayInfoWindow(mouseLocOri, html, 100, 25, "MVInfoWindowStyle1", ""); <!-- html ile oluşturduğumuz koordinat bilgisi tablosunu harita üzerinde pencere şeklinde göstermemizi sağlayan fonksiyon -->
+			}
+
+			function addFOI(longitude, latitude) {
+				var foiId = "single_point_marker"; <!-- Noktanın ID'si -->
+				var foi = mapper.getFOI(foiId); <!-- Önceki oluşturulan noktanın ID'sini foiye atar -->
+				if( foi ) mapper.removeFOI(foi); <!-- Eğer varsa önceden tıklanan konumu siler -->
+
+				var sym_marker = "MAPLINK20.M.CLEARCHANNEL_00"; <!-- Noktanın ikonu -->
+				foi = new MVFOI(foiId, MVSdoGeometry.createPoint(longitude, latitude, 8307), sym_marker, null, 38, 36); <!-- Foi'yi oluşturma -->
+
+				foi.setInfoTip("Konum Bilgisi"); <!-- Foi'ye isim atama -->
+				foi.enableInfoTip(true); <!-- Atanmış ismi gösterir -->
+				mapper.addFOI(foi); <!-- Noktayı haritaya ekler -->
+				zoomToPosition(latitude,longitude,10); <!-- Enlem ve boylamı belli bir yakınlık seviyesinde göstermeyi sağlayan fonksiyon -->
+			}		
+			
+			function zoomToPosition (latitude, longitude, level) {
+				var zoomLevel = 15; <!-- Varsayılan olarak atanan zoom seviyesi -->
+				mapper.setCenterAndZoomLevel(MVSdoGeometry.createPoint(longitude, latitude, 8307), (level ? level : zoomLevel)); <!-- Verilen koordinatları verilen yakınlık seviyesinde haritada göstermesini sağlar -->
+			}			
 		</script>
 	</body>
 </html>
