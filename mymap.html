@@ -6,14 +6,36 @@
 	</head>
 	<body>
 		<h1>My Map Project</h1>
-	</body>
+		<div>
+			<button onclick="startZoom()">Zoom Start</button> <!--Yakınlaştırmaya başlatma butonu -->
+			<button onclick="stopZoom()">Zoom Stop</button> <!-- Yakınlaştırmayı bitirme butonu -->
+		</div>
+	
+		<!-- Haritanın çerçevesini oluşturur -->
 		<div id="map"
 			   style="width:900.0px; height:560.0px; background-color:rgb(255,255,255); border-width:thin; border-color:rgb(99,99,255); border-style:solid;"/>
+			   
+		<!-- Oraclemaps.js'i server üzerinden kullanmamızı sağlar -->
 		<script src="http://maplink20.infotech.com.tr/mapviewer/maplink/jslib/oraclemaps.js"></script>
 		<script>
-			var mapper;
-			mapper = new MVMapView(document.getElementById("map"), "http://maplink20.infotech.com.tr/mapviewer/");
-			mapper.addBaseMapLayer(new MVBaseMap('INFOMAP.INFOTECH_TILELAYER')); 
-			mapper.display();
+			var mapper; <!-- Haritanın objesi -->
+			var mapCenterLon = 35.2448; <!-- Harita merkezinin boylamı -->
+			var mapCenterLat = 38.9560; <!-- Harita merkezinin enlemi -->
+			var mapZoom = 5; <!-- Haritanın yakınlaşma seviyesi -->
+			mapper = new MVMapView(document.getElementById("map"), "http://maplink20.infotech.com.tr/mapviewer/");<!-- map.html ile mapviewer arasında bağlantı kurularak harita oluşturulur ve mapper objesine atanır -->
+			mapper.addBaseMapLayer(new MVBaseMap('INFOMAP.INFOTECH_TILELAYER')); <!-- Harita mühendisleri tarafından yazılan haritanın altyapısını oluşturur (nehirler mavi, yollar gri) -->
+			mapper.setCenterAndZoomLevel(MVSdoGeometry.createPoint(mapCenterLon, mapCenterLat, 8307), mapZoom); <!-- Haritayı belirlediğin yakınlıkta ve merkez noktasında konumlandırıyor -->
+			mapper.addNavigationPanel("WEST"); <!-- Haritanın solunda beliren yakınlaştırma amblemi -->
+			mapper.addScaleBar(); <!-- Yakınlaştırma yapıldığında mevcut mil ve kilometreyi gösterir -->
+			mapper.display();<!-- Haritayı görüntüler -->
+			
+			function startZoom() {
+				mapper.startMarqueeZoom("continuous"); <!-- Haritayı mouse ile çizilen dörtgen kadar yakınlaştırma fonksiyonu çağırılır -->
+			}
+			
+			function stopZoom() {
+				mapper.stopMarqueeZoom(); <!-- Haritayı yakınlaştırmayı durduran fonksiyon çağırılır -->
+			}
 		</script>
+	</body>
 </html>
